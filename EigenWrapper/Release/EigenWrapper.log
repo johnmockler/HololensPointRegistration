@@ -1,0 +1,7 @@
+﻿  Source.cpp
+C:\Users\jmock\source\repos\EigenWrapper\EigenWrapper\Source.cpp(157,11): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+C:\Users\jmock\Documents\eigen-3.3.7\eigen-3.3.7\Eigen\src\Core\Matrix.h(348,7): error C2338: THIS_METHOD_IS_ONLY_FOR_VECTORS_OF_A_SPECIFIC_SIZE
+C:\Users\jmock\Documents\eigen-3.3.7\eigen-3.3.7\Eigen\src\Core\Matrix.h(345): message : while compiling class template member function 'Eigen::Matrix<int,-1,1,0,-1,1>::Matrix(const int &,const int &,const int &)'
+C:\Users\jmock\source\repos\EigenWrapper\EigenWrapper\Source.cpp(55): message : see reference to function template instantiation 'Eigen::Matrix<int,-1,1,0,-1,1>::Matrix(const int &,const int &,const int &)' being compiled
+C:\Users\jmock\Documents\eigen-3.3.7\eigen-3.3.7\unsupported\Eigen\src\MatrixFunctions\MatrixFunction.h(440): message : see reference to class template instantiation 'Eigen::Matrix<int,-1,1,0,-1,1>' being compiled
+C:\Users\jmock\Documents\eigen-3.3.7\eigen-3.3.7\unsupported\Eigen\src\MatrixFunctions\MatrixFunction.h(464): message : see reference to class template instantiation 'Eigen::internal::matrix_function_compute<MatrixType,1>' being compiled
