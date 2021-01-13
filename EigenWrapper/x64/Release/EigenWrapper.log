@@ -1,5 +1,4 @@
-﻿  Source.cpp
-C:\Users\jmock\source\repos\EigenWrapper\EigenWrapper\Source.cpp(161,11): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+﻿  PointRegister.cpp
 C:\Users\jmock\Documents\eigen-3.3.7\eigen-3.3.7\unsupported\Eigen\src\MatrixFunctions\MatrixPower.h(203,1): warning C4305: 'initializing': truncation from 'long double' to 'float'
 C:\Users\jmock\Documents\eigen-3.3.7\eigen-3.3.7\unsupported\Eigen\src\MatrixFunctions\MatrixPower.h(196): message : while compiling class template member function 'void Eigen::MatrixPowerAtomic<Eigen::Matrix<std::complex<float>,-1,-1,0,-1,-1>>::computeBig(Eigen::Block<Derived,-1,-1,false> &) const'
           with
@@ -90,11 +89,11 @@ C:\Users\jmock\Documents\eigen-3.3.7\eigen-3.3.7\Eigen\src\Core\util\XprHelper.h
           [
               T=Eigen::ReturnByValue<Eigen::MatrixPowerReturnValue<Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<float,float>,const Eigen::Matrix<float,-1,-1,0,-1,-1>,const Eigen::Replicate<Eigen::PartialReduxExpr<Eigen::Matrix<float,-1,-1,0,-1,-1>,Eigen::internal::member_mean<float>,1>,-1,-1>>>>
           ]
-C:\Users\jmock\Documents\eigen-3.3.7\eigen-3.3.7\Eigen\src\Core\CoreEvaluators.h(1277): message : see reference to class template instantiation 'Eigen::internal::plain_object_eval<T,Eigen::internal::traits<PlainObjectType>::StorageKind>' being compiled
+C:\Users\jmock\Documents\eigen-3.3.7\eigen-3.3.7\Eigen\src\Core\CoreEvaluators.h(1277): message : see reference to class template instantiation 'Eigen::internal::plain_object_eval<T,Eigen::internal::traits<Derived>::StorageKind>' being compiled
           with
           [
               T=Eigen::ReturnByValue<Eigen::MatrixPowerReturnValue<Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<float,float>,const Eigen::Matrix<float,-1,-1,0,-1,-1>,const Eigen::Replicate<Eigen::PartialReduxExpr<Eigen::Matrix<float,-1,-1,0,-1,-1>,Eigen::internal::member_mean<float>,1>,-1,-1>>>>,
-              PlainObjectType=Eigen::MatrixXf
+              Derived=Eigen::Matrix<float,-1,-1,0,-1,-1>
           ]
 C:\Users\jmock\Documents\eigen-3.3.7\eigen-3.3.7\Eigen\src\Core\Redux.h(349): message : see reference to class template instantiation 'Eigen::internal::evaluator<Eigen::PartialReduxExpr<ExpressionType,Eigen::internal::member_sum<Scalar_>,0>>' being compiled
           with
@@ -124,7 +123,7 @@ C:\Users\jmock\Documents\eigen-3.3.7\eigen-3.3.7\Eigen\src\Core\Redux.h(450): me
           [
               Derived=Eigen::PartialReduxExpr<const Eigen::ReturnByValue<Eigen::MatrixPowerReturnValue<Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<float,float>,const Eigen::Matrix<float,-1,-1,0,-1,-1>,const Eigen::Replicate<Eigen::PartialReduxExpr<Eigen::Matrix<float,-1,-1,0,-1,-1>,Eigen::internal::member_mean<float>,1>,-1,-1>>>>,Eigen::internal::member_sum<float>,0>
           ]
-C:\Users\jmock\source\repos\EigenWrapper\EigenWrapper\Source.cpp(148): message : see reference to function template instantiation 'float Eigen::DenseBase<Derived>::sum(void) const' being compiled
+C:\Users\jmock\source\repos\EigenWrapper\EigenWrapper\PointRegister.cpp(152): message : see reference to function template instantiation 'float Eigen::DenseBase<Derived>::sum(void) const' being compiled
           with
           [
               Derived=Eigen::PartialReduxExpr<const Eigen::ReturnByValue<Eigen::MatrixPowerReturnValue<Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<float,float>,const Eigen::Matrix<float,-1,-1,0,-1,-1>,const Eigen::Replicate<Eigen::PartialReduxExpr<Eigen::Matrix<float,-1,-1,0,-1,-1>,Eigen::internal::member_mean<float>,1>,-1,-1>>>>,Eigen::internal::member_sum<float>,0>
@@ -139,7 +138,7 @@ C:\Users\jmock\Documents\eigen-3.3.7\eigen-3.3.7\Eigen\src\Core\VectorwiseOp.h(5
           [
               Derived=Eigen::PartialReduxExpr<const Eigen::ReturnByValue<Eigen::MatrixPowerReturnValue<Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<float,float>,const Eigen::Matrix<float,-1,-1,0,-1,-1>,const Eigen::Replicate<Eigen::PartialReduxExpr<Eigen::Matrix<float,-1,-1,0,-1,-1>,Eigen::internal::member_mean<float>,1>,-1,-1>>>>,Eigen::internal::member_sum<float>,0>
           ]
-C:\Users\jmock\source\repos\EigenWrapper\EigenWrapper\Source.cpp(148): message : see reference to class template instantiation 'Eigen::PartialReduxExpr<ExpressionType,Eigen::internal::member_sum<Scalar_>,0>' being compiled
+C:\Users\jmock\source\repos\EigenWrapper\EigenWrapper\PointRegister.cpp(152): message : see reference to class template instantiation 'Eigen::PartialReduxExpr<ExpressionType,Eigen::internal::member_sum<Scalar_>,0>' being compiled
           with
           [
               ExpressionType=Eigen::ReturnByValue<Eigen::MatrixPowerReturnValue<Eigen::CwiseBinaryOp<Eigen::internal::scalar_difference_op<float,float>,const Eigen::Matrix<float,-1,-1,0,-1,-1>,const Eigen::Replicate<Eigen::PartialReduxExpr<Eigen::Matrix<float,-1,-1,0,-1,-1>,Eigen::internal::member_mean<float>,1>,-1,-1>>>>,
@@ -147,8 +146,8 @@ C:\Users\jmock\source\repos\EigenWrapper\EigenWrapper\Source.cpp(148): message :
           ]
      Creating library C:\Users\jmock\source\repos\EigenWrapper\x64\Release\EigenWrapper.lib and object C:\Users\jmock\source\repos\EigenWrapper\x64\Release\EigenWrapper.exp
   Generating code
-  16 of 11126 functions ( 0.1%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    1259 functions had inline decision re-evaluated but remain unchanged
+  4843 of 15743 functions (30.8%) were compiled, the rest were copied from previous compilation.
+    4545 functions were new in current compilation
+    2991 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   EigenWrapper.vcxproj -> C:\Users\jmock\source\repos\EigenWrapper\x64\Release\EigenWrapper.dll

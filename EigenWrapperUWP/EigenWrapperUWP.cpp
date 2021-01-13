@@ -1,5 +1,7 @@
 ﻿#include "pch.h"
 #include <Eigen/Dense>
+#include "PointRegister.h"
+
 
 #define EXPORT_API __declspec(dllexport)
 
@@ -7,37 +9,44 @@ using namespace Eigen;
 extern "C" {
 
 
-	EXPORT_API void calculateLeastSquares(float* H, float* X) {
-		//calculates determinant of H, then finds X = U*V_transpose and calculates determinant
+	EXPORT_API void registerIsotropic(float* X, float* Y, float* outR, int N, float* outT, float* outFRE) {
+		//Register two point clouds, where the correspondences are already known, but are affected by isotropic, zero mean measurement noise
+		/*
+			* X is the moving set, which is registered to the static set Y. Both are 3
+			by N, where N is the number of fiducials.
+			Uses method from Least-squares fitting of two 3-D point sets. IEEE T Pattern Anal by Arun et. al.
+			Code adapted from matlab example from balachadran et al (see anisometric case)
+			*/
 		typedef Map<MatrixXf> MapMatrix;
-		MapMatrix H_map(H, 3, 3);
+		MapMatrix x_map(X, 3, N);
+		MapMatrix y_map(Y, 3, N);
+		MapMatrix r_map(outR, 3, 3);
+		MapMatrix t_map(outT, 3, 1);
 
-		MapMatrix xMap(X, 3, 3);
+		PointRegister pr(x_map, y_map, N);
 
-		JacobiSVD<MatrixXf> svd(H_map, ComputeFullU | ComputeFullV);
+		*outFRE = pr.solveIsotropic();
+		r_map = pr.getR();
+		t_map = pr.getT();
 
-		xMap = svd.matrixV() * svd.matrixU().transpose();
-
-		//float det = X_map.determinant();
-		//return X;
 	}
 
-	EXPORT_API void calculateTransform(float* model_centroid, float* detected_centroid, float* R, float* H) {
+	EXPORT_API void registerAnisotropic(float* X, float* Y, float* W, int N, float threshold, float* outR, float* outT, float* outFRE, float* outN)
+	{
+
 		typedef Map<MatrixXf> MapMatrix;
+		MapMatrix x_map(X, 3, N);
+		MapMatrix y_map(Y, 3, N);
+		MapMatrix w_map(W, 3, 3);
+		MapMatrix out_r_map(outR, 3, 3);
+		MapMatrix out_t_map(outT, 3, 1);
 
-		MapMatrix model_map(model_centroid, 3, 1);
-		MapMatrix detected_map(detected_centroid, 3, 1);
+		PointRegister pr(x_map, y_map, N, w_map);
 
-		MapMatrix R_map(R, 3, 3);
+		*outFRE = pr.solveAnisotropic(threshold);
+		*outN = pr.getN_Iter();
+		out_r_map = pr.getR();
+		out_t_map = pr.getT();
 
-		MatrixXf T = detected_map - R_map * model_map;
-
-		//float* H = new float(16);
-		MapMatrix H_map(H, 4, 4);
-
-		H_map = MatrixXf::Identity(4, 4);
-		H_map.block(0, 0, 3, 3) = R_map;
-		H_map.block(0, 3, 3, 1) = T;
-		//return H;
 	}
 }
