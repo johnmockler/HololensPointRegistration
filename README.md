@@ -1,7 +1,7 @@
 # HololensPointRegistration
  a unity plugin for 3D-3D point registration for the Hololens
  
- Isotropic case assumes that each correspondence is already known, there is minimal gaussian, zero-mean noise, and the noise is the same accross each dimension.
+ Isotropic case assumes that each correspondence is already known, there is minimal gaussian, zero-mean noise, and the noise is the same across each dimension.
  
  Anisotropic only differs in that the noise is different for all or some of the axes. It uses a weighting matrix, which is just an inverted covariance matrix for each axis - this means that it weights axes which it is more sure about heavier than ones which have a high variance (this is useful, for example, if a tracking system has a higher uncertainty along the depth axis, which is often the case).
  
