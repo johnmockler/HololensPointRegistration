@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Eigen/Dense>
-#include <limits>
+#include <Eigen/LU>
 #include <unsupported/Eigen/MatrixFunctions>
 
 using namespace Eigen;
@@ -26,6 +26,7 @@ private:
 	MatrixXf Y;
 	int N;
 	int n_iter = 0;
+	int MAX_ITERATIONS = 100;
 	void c_maker(Ref<MatrixXf> C);
 	void e_maker(Ref<MatrixXf> e);
 	void initialize(MatrixXf Xin, MatrixXf Yin, int NumPoints);

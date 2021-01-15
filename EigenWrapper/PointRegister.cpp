@@ -43,8 +43,8 @@ void PointRegister::e_maker(Ref<MatrixXf> e)
 	MatrixXf d2 = D.row(2).replicate(3, 1);
 	MatrixXf d3 = D.row(3).replicate(3, 1);
 	e << w1.cwiseProduct(d1) + w2.cwiseProduct(d2) + w3.cwiseProduct(d3);
-	int e_rows = 3 * N;
-	e.resize(e_rows, 6);
+
+	e.resize(6, 1);
 }
 
 int PointRegister::getN_Iter()
@@ -73,22 +73,26 @@ void PointRegister::initialize(MatrixXf Xin, MatrixXf Yin, int num_points)
 float PointRegister::solveIsotropic()
 {
 	
-	Vector3f x_mean = X.rowwise().mean();
-	Vector3f y_mean = Y.rowwise().mean();
+	MatrixXf x_mean = X.rowwise().mean();
+	MatrixXf y_mean = Y.rowwise().mean();
 	
-	Vector3f x_tilde = X - x_mean.replicate(1, N); //x shifted to origin
-	Vector3f y_tilde = Y - y_mean.replicate(1, N); //y shifted to origin
+	MatrixXf x_tilde = X - x_mean.replicate(1, N); //x shifted to origin
+	MatrixXf y_tilde = Y - y_mean.replicate(1, N); //y shifted to origin
 	
 	MatrixXf H = x_tilde * y_tilde.transpose(); //cross covariance matrix
 	
 	JacobiSVD<MatrixXf> svd(H, ComputeFullU | ComputeFullV);
 	
+	
+
 	R = svd.matrixV() * svd.matrixU().transpose(); //why does the fitzpatrick paper have a diag(1, 1, det(V*U))? its not in the arun paper
 	T = y_mean - R * x_mean;
+
+	MatrixXf FREvect = R * X + T.replicate(1, N) - Y;
 	
-	VectorXf FREvect = R * X - T.replicate(1, N) - Y;
-	
-	float FRE = std::sqrt(FREvect.pow(2).rowwise().sum().mean());
+	float FRE = std::sqrt(FREvect.pow(2).colwise().sum().mean());
+
+
 	return FRE;
 }
 
@@ -109,16 +113,27 @@ float PointRegister::solveAnisotropic(float threshold)
 	R. Balachandran and J. M. Fitzpatrick
 	December 2008
 	*/
-	solveIsotropic();
+	
+	float iso_fre = solveIsotropic();
+
+	//if there is no, or minimal error, then there's no need to loop
+	/*
+	if (iso_fre < threshold) {
+		return iso_fre;
+	}*/
 
 	int n = 0;
 	int index = 0;
-	float config_change = std::numeric_limits<float>::infinity();
+	float config_change = threshold + 1.0f;
 	MatrixXf Xold = R * X + T.replicate(1, N);
 	MatrixXf Xnew;
 	Vector3f oldq;
 
 	while (config_change > threshold) {
+		if (n > MAX_ITERATIONS) {
+			break;
+		}
+		
 		n = n + 1;
 
 		MatrixXf C;
@@ -127,19 +142,22 @@ float PointRegister::solveAnisotropic(float threshold)
 		MatrixXf e;
 		e_maker(e);
 
-		Vector3f q = C.colPivHouseholderQr().solve(e);
+		Vector3f q = C.lu().solve(e);
 
 		if (n > 1) {
 			q = (q + oldq) / 2.0f; //damps osccilations
 		}
 		oldq = q;
+		
 		Vector3f delta_t;
-		delta_t << q[4], q[5], q[6];
+		delta_t << q(4), q(5), q(6);
 		delta_t.transpose();
+		
 		Matrix3f delta_theta;
-		delta_theta << 1, -q[3], q[2],
-			q[3], 1, -q[1],
-			-q[2], q[1], 1;
+		delta_theta << 1, -q(3), q(2),
+			q(3), 1, -q(1),
+			-q(2), q(1), 1;
+		
 		JacobiSVD<Matrix3f> svd(delta_theta, ComputeFullU | ComputeFullV);
 
 		Matrix3f delta_R = svd.matrixU() * svd.matrixV().transpose();
@@ -153,14 +171,17 @@ float PointRegister::solveAnisotropic(float threshold)
 		config_change = std::sqrt(num / denom);
 
 		Xold = Xnew;
+
+
 	}
+
+	n_iter = n;
 
 	VectorXf FREmatrix(N);
 	for (int i = 0; i < N; i++) {
 		VectorXf D = W * (Xnew.col(i) - Y.col(i));
 		FREmatrix[i] = D.transpose() * D;
 	}
-	n_iter = n;
 
 	return std::sqrt(FREmatrix.mean());
 }
