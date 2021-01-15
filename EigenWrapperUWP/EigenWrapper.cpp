@@ -5,7 +5,6 @@
 using namespace Eigen;
 extern "C" {
 
-
 	EXPORT_API float registerIsotropic(float* X, float* Y,  int N, float* outR, float* outT) {
 		typedef Map<MatrixXf> MapMatrix;
 		MapMatrix x_map(X, 3, N);
@@ -13,14 +12,10 @@ extern "C" {
 		MapMatrix r_map(outR, 3, 3);
 		MapMatrix t_map(outT, 3, 1);
 
-		//should rather change algorithm in c# code for building 1d matrix
-		//MatrixXf x_corrected = x_map.transpose();
-		//MatrixXf y_corrected = y_map.transpose();
-
-
 		PointRegister pr(x_map, y_map, N);
 
-		float FRE = pr.solveIsotropic();
+		float FRE = pr.solveAnisotropic(0.05f);
+
 		r_map = pr.getR();
 		t_map = pr.getT();
 		return FRE;
@@ -34,15 +29,17 @@ extern "C" {
 		MapMatrix x_map(X, 3, N);
 		MapMatrix y_map(Y, 3, N);
 		MapMatrix w_map(W, 3, 3);
-		MapMatrix out_r_map(outR, 3, 3);
-		MapMatrix out_t_map(outT, 3, 1);
+		MapMatrix r_map(outR, 3, 3);
+		MapMatrix t_map(outT, 3, 1);
 
 		PointRegister pr(x_map, y_map, N, w_map);
 
-		float FRE = pr.solveAnisotropic(threshold);
-		out_r_map = pr.getR();
-		out_t_map = pr.getT();
+		float FRE =  pr.solveAnisotropic(threshold);
+
+		r_map = pr.getR();
+		t_map = pr.getT();
 		return FRE;
+		
 
 	}
 }

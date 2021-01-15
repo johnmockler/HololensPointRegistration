@@ -22,15 +22,13 @@ void PointRegister::c_maker(Ref<MatrixXf> C)
 	MatrixXf x1 = X.row(1).replicate(3, 1);
 	MatrixXf x2 = X.row(2).replicate(3, 1);
 	MatrixXf x3 = X.row(3).replicate(3, 1);
-	C << -w2.cwiseProduct(x3) + w3.cwiseProduct(x2), w1.cwiseProduct(x3) - w3.cwiseProduct(x1),
-		-w1.cwiseProduct(x2) + w2.cwiseProduct(x1), w1, w2, w3;
-	//I am not sure what the permutation does in the main code... (how does it even work, it's not a 3d matrix)
-	//I don't think it's necessary. you just need to map this, 3x6N matrix to 3Nx6;
-	//Eigen::PermutationMatrix<Eigen::Dynamic, Eigen::Dynamic> perm;
-	//perm.indices() = { 0, 2, 1 };
-	//C = C * perm;
-	int c_rows = 3 * N;
-	C.resize(c_rows, 6);
+	
+	MatrixXf ctemp1(3, 6 * N);
+	ctemp1 << -w2.cwiseProduct(x3) + w3.cwiseProduct(x2), w1.cwiseProduct(x3) - w3.cwiseProduct(x1),
+			-w1.cwiseProduct(x2) + w2.cwiseProduct(x1), w1, w2, w3;
+
+	Map<MatrixXf> ctemp2(ctemp1.data(), 3* N, 6);
+	C = ctemp2;
 }
 
 void PointRegister::e_maker(Ref<MatrixXf> e)
@@ -42,9 +40,13 @@ void PointRegister::e_maker(Ref<MatrixXf> e)
 	MatrixXf d1 = D.row(1).replicate(3, 1);
 	MatrixXf d2 = D.row(2).replicate(3, 1);
 	MatrixXf d3 = D.row(3).replicate(3, 1);
-	e << w1.cwiseProduct(d1) + w2.cwiseProduct(d2) + w3.cwiseProduct(d3);
 
-	e.resize(6, 1);
+	MatrixXf etemp1(1, 6);    // Column-major storage
+	etemp1 << w1.cwiseProduct(d1) + w2.cwiseProduct(d2) + w3.cwiseProduct(d3);
+
+	Map<MatrixXf> etemp2(etemp1.data(), 6, 1);
+
+	e = etemp2;
 }
 
 int PointRegister::getN_Iter()
@@ -98,29 +100,8 @@ float PointRegister::solveIsotropic()
 
 float PointRegister::solveAnisotropic(float threshold)
 {
-	/*
-	X is the moving set, which is registered to the static set Y. Both are 3
-	by N, where N is the number of fiducials. W is a 3-by-3 array, with
-	each page containing the weighting matrix.
-	THRESHOLD is the size of the change to the moving set above which the
-	iteration continues.
-
-	note: here W is estimated to be the same for each fiducial. Without this
-	assumption, W would be 3x3xN (and code would need to be modified)
-	outputs: Rotation, Translation, FRE and number of iterations
-
-	Adapted from Matlab Code authored by:
-	R. Balachandran and J. M. Fitzpatrick
-	December 2008
-	*/
 	
 	float iso_fre = solveIsotropic();
-
-	//if there is no, or minimal error, then there's no need to loop
-	/*
-	if (iso_fre < threshold) {
-		return iso_fre;
-	}*/
 
 	int n = 0;
 	int index = 0;
@@ -128,7 +109,7 @@ float PointRegister::solveAnisotropic(float threshold)
 	MatrixXf Xold = R * X + T.replicate(1, N);
 	MatrixXf Xnew;
 	Vector3f oldq;
-
+	
 	while (config_change > threshold) {
 		if (n > MAX_ITERATIONS) {
 			break;
@@ -138,10 +119,11 @@ float PointRegister::solveAnisotropic(float threshold)
 
 		MatrixXf C;
 		c_maker(C);
-
+		
 		MatrixXf e;
 		e_maker(e);
-
+		
+		
 		Vector3f q = C.lu().solve(e);
 
 		if (n > 1) {
@@ -171,19 +153,24 @@ float PointRegister::solveAnisotropic(float threshold)
 		config_change = std::sqrt(num / denom);
 
 		Xold = Xnew;
-
-
+		
+		
 	}
-
+	
+	
 	n_iter = n;
 
+	
 	VectorXf FREmatrix(N);
 	for (int i = 0; i < N; i++) {
 		VectorXf D = W * (Xnew.col(i) - Y.col(i));
 		FREmatrix[i] = D.transpose() * D;
 	}
+	
 
-	return std::sqrt(FREmatrix.mean());
+	float FRE = std::sqrt(FREmatrix.mean());
+	
+	return FRE;
 }
 
 
