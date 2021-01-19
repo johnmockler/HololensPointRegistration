@@ -10,6 +10,4 @@ code adapted from matlab code in Iterative Solution for Rigid-Body Point-Based R
 
 only tested for hololens 1
 
-Anisotropic case currently is crashing for some reason. Isotropic appears to be fully functional.
-
 Readme is a work in progress (to come: set up guide, making it look nicer, ect)
