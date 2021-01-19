@@ -5,7 +5,7 @@
 using namespace Eigen;
 extern "C" {
 
-	EXPORT_API float registerIsotropic(float* X, float* Y,  int N, float* outR, float* outT) {
+	EXPORT_API float registerIsotropic(float* X, float* Y,  int N, float* outR, float* outT) {		
 		typedef Map<MatrixXf> MapMatrix;
 		MapMatrix x_map(X, 3, N);
 		MapMatrix y_map(Y, 3, N);
@@ -14,17 +14,14 @@ extern "C" {
 
 		PointRegister pr(x_map, y_map, N);
 
-		float FRE = pr.solveAnisotropic(0.05f);
+		float FRE = pr.solveIsotropic();
 
 		r_map = pr.getR();
 		t_map = pr.getT();
 		return FRE;
-
 	}
 
-	EXPORT_API float registerAnisotropic(float* X, float* Y, float* W, int N, float threshold, float* outR, float* outT)
-	{
-
+	EXPORT_API float registerAnisotropic(float* X, float* Y, float* W, int N, float threshold, float* outR, float* outT) {
 		typedef Map<MatrixXf> MapMatrix;
 		MapMatrix x_map(X, 3, N);
 		MapMatrix y_map(Y, 3, N);
@@ -39,7 +36,5 @@ extern "C" {
 		r_map = pr.getR();
 		t_map = pr.getT();
 		return FRE;
-		
-
 	}
 }
